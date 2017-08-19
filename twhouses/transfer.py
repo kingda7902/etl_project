@@ -1,6 +1,7 @@
 # * -- codinf: utf-8 -- *
 from os import listdir
 import json
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -78,8 +79,14 @@ if __name__=="__main__":
         with open(inDir + filename, encoding='utf-8') as rf:
             datas = json.loads(json.load(rf))
             for data in datas:
-                data.update(getDetail(data['url']))
-                twhouses_id = data.pop('twhouses_id')
-                data.pop('phone')
-                with open(outFilePath.format(twhouses_id), 'w' ,encoding='utf-8') as wf:
-                    json.dump(data, wf)
+                time.sleep(1)
+                try:
+                    data.update(getDetail(data['url']))
+                    twhouses_id = data.pop('twhouses_id')
+                    data.pop('phone')
+                    data['update']=data.pop('updataDate')
+                    with open(outFilePath.format(twhouses_id), 'w' ,encoding='utf-8') as wf:
+                        json.dump(data, wf)
+                    time.sleep(1)
+                except:
+                    print('err')
