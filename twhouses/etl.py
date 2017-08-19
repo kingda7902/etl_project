@@ -2,6 +2,7 @@
 import json
 import datetime
 import re
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -14,11 +15,17 @@ def getTotalPages(request):
 
 def rent2n(rent_str):
     temp = ''.join(rent_str.split('/')[0].strip().split(','))
-    return temp if isinstance(temp, int) else "NA"
+    try:
+        return int(temp)
+    except ValueError:
+        return 'NA'
 
 def space2n(space_str):
     temp = space_str.split('/')[0].strip()
-    return temp if isinstance(temp, float) else "NA"
+    try:
+        return float(temp)
+    except ValueError:
+        return 'NA'
 
 def updateDate(Zhdate):
     day = re.match('(\d*)', Zhdate).group(1)
@@ -59,7 +66,6 @@ def transfer(df):
     # 'space' is float
     df['space'] = df['space'].apply(space2n)
     # append address
-    import re
     df['address'] = df['cityID'].apply(lambda x : re.sub('\[|\]','',x))\
                     + df['address'].apply(lambda x : x.split()[0])
     # update Date
@@ -128,6 +134,8 @@ if __name__=="__main__":
              'usingtype': '12', 
              'pageindex': '1', 'showtype': '1'
              }
+    filepath = './lowdata/'
+    filename = '{}_{}_{}.json'
 
     regionList = ['新北市','台北市']
     usingtypeList = [11,12,13] #住宅,套房,雅房 resp
@@ -138,8 +146,12 @@ if __name__=="__main__":
         res = requests.get(uri,query_data)
         totalPages = getTotalPages(res)
         url = res.url.replace('pageindex=1','pageindex={}')
+        time.sleep(0.1)
 
         for pageindex in range(1,totalPages+1):
             df = pd.read_html(url.format(pageindex))[0]
-            print(transfer(df))
+            json_list = transfer(df).to_json(orient="records", force_ascii=False)
+            path = filepath + filename.format(query[0], query[1], pageindex)
+            with open(path,'w' , encoding='utf8') as f:
+                json.dump(json_list,f)
     
