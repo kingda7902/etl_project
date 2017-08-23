@@ -80,6 +80,7 @@ if __name__=="__main__":
             datas = json.loads(json.load(rf))
             
             for data in datas:
+<<<<<<< HEAD
                 try:
                     print(data['url'])
                     data.update(getDetail(data['url']))
@@ -91,3 +92,16 @@ if __name__=="__main__":
                         json.dump(data, wf)
                 except:
                     print('err')
+=======
+                time.sleep(1)
+                try:
+                    data.update(getDetail(data['url']))
+                    twhouses_id = data.pop('twhouses_id')
+                    data.pop('phone')
+                    data['update']=data.pop('updataDate')
+                    with open(outFilePath.format(twhouses_id), 'w' ,encoding='utf-8') as wf:
+                        json.dump(data, wf)
+                    time.sleep(1)
+                except:
+                    print('err')
+>>>>>>> 173ebc8f1831dd4b4d878188185e638946c00650
