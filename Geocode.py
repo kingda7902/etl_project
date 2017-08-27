@@ -11,9 +11,10 @@ apiurl = 'https://maps.googleapis.com/maps/api/geocode/json'
 def geocoding(address, key = ''):
     queryData = {}
     queryData['address'] = address
-    queryData['key'] = key
+    queryData['key'] = ''
     res = requests.get(apiurl, params=queryData)
     code = res.json()
+    time.sleep(0.02)
     res.close()
     if code.get('status') == 'OK':
         result = {}
@@ -24,7 +25,7 @@ def geocoding(address, key = ''):
         return result
     else:
         return {'status':code.get('status')}
-    time.sleep(0.02)
+    
 
 
 # def pregeocoding(latlng, key=''):
